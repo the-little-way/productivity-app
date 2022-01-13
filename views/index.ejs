@@ -1,0 +1,59 @@
+<%- include ('./partials/header') %>
+	<div id="overlay"></div>	
+	<header>
+		<div class="greeting">
+			<h4>Things to do today:</h4>
+		</div>
+	</header>
+	<div class="weatherInfo">
+		<!-- modal with input to allow users to select own city -->
+		<div id="popupCity">
+			<form action="/" method="post">
+				<input type="text" placeholder="Enter new city" name="newCity" maxlength="15">
+				<button type="submit" class="noBtn">Update</button>
+			</form>
+		</div>
+		<p>The current weather in <span class="bold"><%= City %></span> <span id="editCity">?</span> is : <span class="bold"><%= Temp %></span> degrees Celcius
+		</p>
+	</div>
+	<section class="currently">
+		<h1> <%= Today %> </h1>
+		<!-- loop to create new list items -->
+		<% for (item in newItem) {%>
+		<div class="item">
+			<input type="checkbox"/>
+			<p id="listedItem"><%= newItem[item] %> </p>
+		</div>
+		<% } %>
+		<!-- undo btn becomes visible only if list item exists -->
+		<% if (newItem[0]) {%>
+		<form action='/undo' method="post">
+			<button id="undoBtn" type="submit">x</button>
+		</form>
+		<% } %>
+		<!-- main form -->
+		<form action='/' method="post">
+			<center>
+				<input type="text" id="itemInput" name="activityInput" placeholder="Enter new activity here" maxlength="30"/>
+				<button id="itemBtn" type="submit" disabled>+</button>
+			</center>
+		</form>
+	</section>
+	<center>
+		<!-- allow save only if there are items to save -->
+		<form  action='/save' method="post">
+			<button class="newBtn" id="saveBtn" type="submit" disabled>Save</button>
+		</form>
+	</center>
+	<div class="flex-c">
+		<!-- add section with loop to display the previously saved db data as cards plus an option to delete -->
+		<h4 class="centered">Previous saved lists:</h4>
+		<% for (i in savedItems) { %>
+			<a href= <%= savedItems[i].link %> class="mb-1">
+			<section class="storedPreview">
+				<h4> <%= savedItems[i].Today %> </h4>
+			</section>
+			</a>
+		<% } %>
+	</div>
+<%- include ('./partials/footer') %>

@@ -1,0 +1,25 @@
+<%- include ('./partials/header') %>
+	<div class="greeting">
+		<h4>View saved list:</h4>
+	</div>
+	<section class="previously">
+		<h1> <%= Today %> </h1>
+		<!-- loop to create new list items -->
+		<% for (item in newActs) {%>
+		<div class="item">
+			<input type="checkbox" />
+			<p id="listedItem"><%= newActs[item] %> </p>
+		</div>
+		<% } %>
+		<!-- delete btn becomes visible only if list item exists -->
+		
+		<form action='/remove' method="post" class="delForm">
+			<input type="text" name="savedID" hidden value= <%= _id %> >
+			<button id="deleteBtn" type="submit">Delete</button>
+		</form>
+		
+	</section>
+	<center>
+		<a href='/' class="newBtn newBtn-alt">Go back</a>
+	</center>
+<%- include ('./partials/footer') %>

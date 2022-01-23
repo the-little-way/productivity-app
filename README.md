@@ -1,4 +1,4 @@
-This is a little to-do web app I made mainly to experiment with a web app operates fully on backend logic alone. It is not for commericial use, and originally intended just for portfolio purposes.
+This is a little to-do web app I made mainly to experiment with a web app that operates fully on backend logic alone. It is not for commericial use, and originally intended just for portfolio purposes.
 
 This project covers all parts of a full stack project, i.e.:
 

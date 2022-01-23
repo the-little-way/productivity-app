@@ -32,6 +32,51 @@
 		flex-direction: column;
 	}
 
+	/*logout*/
+	.sticky-logout {
+		position: sticky;
+		top: 2rem;
+		width: 7rem;
+		background-color: black;
+		color: white;
+		border-radius: 3rem;
+		padding: 0.3rem;
+		float: right;
+		right: 2rem;
+		transition: all 0.3s ease-in;
+	}
+
+	.sticky-logout:hover {
+		background-color: #6725a9;
+		transition: all 0.3s ease-out;
+	}
+
+	.sticky-wrapper {
+		position: sticky;
+		display: flex;
+	}
+
+	.sticky-wrapper form {
+		display: flex;
+		padding: 0.3rem;
+	}
+
+	.sticky-logout img {
+		height: 2rem;
+		width: 2rem;
+		object-fit: contain;
+		background-repeat: no-repeat;
+		display: inline;
+	}
+
+	#logoutBtn {
+		background-color: transparent;
+		color: white;
+		outline: none;
+		border: transparent;
+		font-weight: bold;
+	}
+
 	/*card*/
 	section {
 		margin: 30px auto 0;
@@ -95,7 +140,7 @@
 	}
 
 	/*main input field w underline only*/
-	input[type="text"] {
+	input[type="text"], input[type="password"] {
 		text-align: center;
 		border: none;
 		background-color: transparent;
@@ -103,7 +148,7 @@
 		width: 60%;
 	}
 
-	input[type="text"]:focus {
+	input[type="text"]:focus, input[type="password"]:focus {
 		width: 60%;
 		outline: none;
 	}
@@ -112,7 +157,7 @@
 		opacity: 0.2;
 	}
 
-	input[type="text"]:focus::placeholder {
+	input[type="text"]:focus::placeholder, input[type="password"]:focus::placeholder {
 		opacity: 0;
 	}
 
@@ -254,4 +299,44 @@
 		font-weight: 700;
 		border: none;
 		cursor: pointer;
+	}
+
+	/* Registry and Login forms*/
+	#registerForm {
+		display: none;
+	}
+
+	.entry-form {
+		min-width: 300px;
+		width: 22rem;
+		background-color: beige;
+		padding: 50px 10px;
+		margin-top: 10rem;
+		border-radius: 1rem;
+	}
+
+	.entry-form input {
+		margin-bottom: 2rem;
+		text-align: left;
+		width: 80%;
+		padding-bottom: 0.4rem;
+	}
+
+	.entry-form .newBtn {
+		margin-bottom: 3rem;
+	}
+
+	#registerSwap:hover , #loginSwap:hover {
+		color: black;
+		cursor: pointer;
+	}
+
+	#registerSwap:hover , #loginSwap:hover {
+		color: blue;
+	}
+
+	@media only screen and (max-width:540px) {
+		.sticky-logout {
+			top: 35rem;
+		}
 	}

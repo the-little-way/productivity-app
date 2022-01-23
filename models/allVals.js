@@ -3,10 +3,9 @@ const mongoose = require('mongoose');
 //store these user data into allVals
 var allVals = mongoose.model('allVals', {
 	newActs: [],
-	Today: "",
-	link: "", //used for href '/' + getTime()
-	username: "",
-	password: ""
+	Today: String,
+	link: String, //used for href '/' + getTime()
+	username: String
 });
 
 

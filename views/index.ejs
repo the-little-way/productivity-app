@@ -1,5 +1,15 @@
 <%- include ('./partials/header') %>
-	<div id="overlay"></div>	
+	<div id="overlay"></div>
+
+	<!-- sticky form -->
+		<div class="sticky-logout" id="stickyBtn">
+			<div class="sticky-wrapper">
+				<img src="images/avatar.png">
+				<form action="/logout" method="post">
+					<button type="submit" id="logoutBtn">Logout</button>
+				</form>
+			</div>	
+		</div>
 	<header>
 		<div class="greeting">
 			<h4>Things to do today:</h4>
@@ -31,6 +41,8 @@
 			<button id="undoBtn" type="submit">x</button>
 		</form>
 		<% } %>
+
+
 		<!-- main form -->
 		<form action='/' method="post">
 			<center>
@@ -39,12 +51,14 @@
 			</center>
 		</form>
 	</section>
+
 	<center>
 		<!-- allow save only if there are items to save -->
 		<form  action='/save' method="post">
 			<button class="newBtn" id="saveBtn" type="submit" disabled>Save</button>
 		</form>
 	</center>
+
 	<div class="flex-c">
 		<!-- add section with loop to display the previously saved db data as cards plus an option to delete -->
 		<h4 class="centered">Previous saved lists:</h4>

@@ -1,0 +1,41 @@
+<%- include ('./partials/header') %>
+<center>
+	<!-- Login form -->
+	<div class="entry-form" id="loginForm">
+		<form action="/login" method="Post">
+			<div>
+				<input class ="" type="text" name="username" placeholder="Enter username here">
+			</div>
+			<div>
+				<input class ="" type="password" name="password" placeholder="Type in password">
+			</div>
+			<div>
+				<button type="submit" id="" class="newBtn">
+					Enter
+				</button>
+			</div>
+		</form>
+		<small>New visitor? <span id="registerSwap">Click here to create an account</span></small>
+	</div>
+
+	<!-- Registration form -->
+	<div class="entry-form" id="registerForm">
+		<form action="/register" method="Post">
+			<div>
+				<input class ="" type="text" name="newuser" placeholder="Enter username here">
+			</div>
+			<div>
+				<input class ="" type="password" name="newpass" placeholder="Type in password">
+			</div>
+			<div>
+				<button type="submit" id="" class="newBtn">
+					Register
+				</button>
+			</div>
+		</form>
+		<small>Got an account? <span id="loginSwap">Click here to login</span></small>
+	</div>
+
+</center>
+<script type="text/javascript" src="entry.js"></script>
+<%- include('./partials/footer.ejs') %>

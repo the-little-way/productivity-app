@@ -4,8 +4,11 @@ const bodyParser = require('body-parser');
 const ejs = require('ejs');
 const https = require('https');
 const cors = require('cors');
+
 const {mongoose} = require('./db.js');
 const {allVals} = require('./models/allVals.js')
+const {allUsers} = require('./models/allUsers.js')
+const refreshWeather = require ('./refreshWeather.js')
 
 app.use(bodyParser.urlencoded({extended:true}));
 
@@ -13,12 +16,17 @@ app.set('view engine', 'ejs');
 
 app.use(express.static('assets'));
 
-app.listen(3000);
+//scroll to bottom for port
 
 
 //temp storage
-var savedItems = []; // pull info from db
+// pull info from db
+var savedItems = [];
+
+// fill using current session
 var newActs = [];
+
+//all the data to be shipped to front-end
 var vals = {newItem: '',
 			Today: '',
 			City : '',
@@ -27,76 +35,141 @@ var vals = {newItem: '',
 			Icon : '',
 			savedItems: ''
 		};
-let username = "user1";
-let refreshWeather = true;
+		
+let username = "";
+let updateWeather = true;
 let City = "Accra"; //default city
 
-app.get('/', (req, res) => {
 
-	//savedItems.link='/';
-	allVals.find()
-	.then((doc)=>{
-		savedItems=doc
-	});
-	//console.log(savedItems);
+app.route('/login')
+	.get((req, res)=>{
+		res.render('login.ejs')
+	})
+	.post((req, res)=>{
+		let user = req.body.username;
+		let pass = req.body.password;
+		let savedPass = '';
 
-	//use openweather API to get current weather
-	// check weather once on the first render and then manually next time instead of on every page refresh
-	
-	//change city if user desires else use default for api call
-	//console.log(City);
-	const apiUrl = "https://api.openweathermap.org/data/2.5/weather?q="+ City + "&units=metric&APPID=a0562d44b2bd5392dc0f1ef5d322cc65";
+		//check the allUsers db for matching username then compare password (not hashed for now)
+		allUsers.find( {username:user}, (err, docs)=>{
+			if(!err && docs[0] != null ){
+				//console.log(docs)
+				savedPass = docs[0].password;
+				//console.log(pass)
+				if(savedPass == pass){
+					username = user;
+					res.redirect('/')
+				}
+				else res.redirect('/login')
+			}
+			else {console.log('user validation error: ' + err);
+				res.redirect('/login')
+			}
+		})
+	})
 
-	if (refreshWeather) {
+app.route('/register')
+	.post((req, res)=>{
+		let userNew = req.body.newuser;
+		let passNew = req.body.newpass;
 
-	https.get( apiUrl, (response) => {
-	//console.log( response.statusCode )
-	
-		if(response.statusCode == 200){
-			//parse it into JSON, reformat to 1 decimal point
-			response.on("data", (data) => {
-					const weatherData = JSON.parse(data);
-					let desc = weatherData.weather[0].description;
-					let icon = weatherData.weather[0].icon;
-					let iconURL = "https://openweathermap.org/img/wn/" + icon + "@2x.png";
-					let cityTempVal = weatherData.main.temp;
-					let cityTemp = Math.round(cityTempVal * 10) / 10 
+		//create new modle and check if username already exists before saving it
+		allUsers.find({username:userNew}, (err, docs)=>{
+			if (!err && docs[0] != null){
+				//if a document is returned it means a user exists so no registration is allowed
+				res.send('Sorry username exists. Please try a different name') //to-do: replace with better res.send
+			}
+			else if (!err && docs[0] == null){
+				//it means no such user exists so save this new user
+				let userNewData = new allUsers({
+					username : userNew,
+					password : passNew
+				})
+				userNewData.save();
+				res.redirect('/login')
+			}
+			else {console.log(err);
+				res.redirect('/login')
+			}
+		})
+	})
+
+app.route('/')
+	.get((req,res)=>{
+
 
 			//display today's date
 			let today = new Date();
 			let dateFormat = {date: "short", day: "numeric", month:"long", year:"numeric"}
 			today = today.toLocaleString("en-US", dateFormat);
 
-			//update vals{}
-			vals = {newItem: newActs,
-					Today: today,
-					City : City.toUpperCase(),
-					Temp : cityTemp,
-					Desc : desc,
-					Icon : iconURL,
-					savedItems: savedItems
-			}
-
-			//modify refreshWeather status and ship everything to front-end
-			refreshWeather = false;
-			console.log('API call req done')
-			res.render('index.ejs', vals)
-
+			//first check if valid user is logged in
+			allUsers.find( {username : username}, (err, docs)=>{
+				if(!err && docs[0] != null ){
+					//means userfound, now load user's lists from allVals db
+					allVals.find( {username : username} )
+					.then((doc)=>{
+						savedItems=doc
 					});
-		}
-		//else if status code error on weather API call
-		else {
-			console.log("Error checking the weather");
-			res.render('404.ejs')
-		}
-		
+					//console.log(savedItems);
+					//href value = savedItems.link='/...'
+
+					//use openweather API to get current weather
+					// check weather once on the first render and then manually next time instead of on every page refresh
+					
+					//change City if user desires else use default for api call
+					if (updateWeather){
+
+						const promiseToken = refreshWeather(City).then( (ans)=>{
+						//console.log('returned from refreshWeather:' + ans.City);
+						
+						//update vals{} including returned vals from refreshWeather()
+						vals = {newItem: newActs,
+								Today: today,
+								City : ans.City,
+								Temp : ans.Temp,
+								Desc : ans.Desc,
+								Icon : ans.iconURL,
+								savedItems: savedItems
+						}
+						updateWeather = ans.updateWeather;
+						//Ship everything to front-end
+						res.render('index.ejs', vals)	
+						})
+					}
+
+					//skiped weather refresh
+					else res.render('index.ejs', vals)
+					
+					
+					
+				}
+
+				//user not logged in so return to login page
+				else res.redirect('/login')
+			})
+
 	})
+	.post((req, res)=>{
 
-	}
-	// else render page without API call, to save time
-	else res.render('index.ejs', vals)
+		//if new city is entered, reformat first
+		if(req.body.newCity){
+			City = req.body.newCity;
+			City = City.charAt(0).toUpperCase() + City.substring(1)
+			updateWeather = true
+		};
+		
 
-});
+		//only add item if input has a valid typed value
+		if (req.body.activityInput !== undefined){
+			var newAct = req.body.activityInput;
+			newActs.push(newAct);
+			vals.newItem = newActs
+		}
+
+		res.redirect('/')
+	});
+
 
 
 app.post('/undo', (req, res)=>{
@@ -111,55 +184,47 @@ app.post('/undo', (req, res)=>{
 })
 
 app.post('/save', (req, res)=>{
-
-	//recreate current date
-	let today = new Date();
-	let timeAsLink = '/' + today.getTime();
-	let dateFormat = {date: "short", day: "numeric", month:"long", year:"numeric"}
-	today = today.toLocaleString("en-US", dateFormat);
-
-	//create object and save key info to db
-	let batchVals = new allVals ({
-					newActs : newActs,
-					Today : today,
-					username : username,
-					link: timeAsLink
-				})
-		
-	batchVals.save()
-
-	//once saved clear arrays, renderedPage status to allow weather api refresh
-	newActs = [];
-	vals = {newItem: '',
-			Today: '',
-			City : '',
-			Temp : '',
-			Desc : '',
-			Icon : ''};
-	refreshWeather = true;
-
-		res.redirect('/')
 	
+	//only save to db if valid user
+	//allUsers.find({username:userNew}, (err, docs)=>{
+
+	//if (!err && docs[0] != null){
+
+		//recreate current date
+		let today = new Date();
+		let timeAsLink = '/' + today.getTime();
+		let dateFormat = {date: "short", day: "numeric", month:"long", year:"numeric"}
+		today = today.toLocaleString("en-US", dateFormat);
+
+		//create object and save key info to db
+		let batchVals = new allVals ({
+						newActs : newActs,
+						Today : today,
+						username : username,
+						link: timeAsLink
+					})
+			
+		batchVals.save()
+
+		//once saved clear arrays, renderedPage status to allow weather api refresh
+		newActs = [];
+		vals = {newItem: '',
+				Today: '',
+				City : '',
+				Temp : '',
+				Desc : '',
+				Icon : ''
+			};
+		updateWeather = true;
+
+			res.redirect('/')
+	//}
+	//else res.redirect('/login')
+	//})
 })
 
-app.post('/', (req, res)=>{
 
-	//if new city is entered, reformat first
-	if(req.body.newCity){
-		City = req.body.newCity;
-		City = City.charAt(0).toUpperCase() + City.substring(1)
-		refreshWeather = true
-	};
-	
 
-	//only add item if input has a valid typed value
-	if (req.body.activityInput !== undefined){
-		var newAct = req.body.activityInput;
-		newActs.push(newAct);
-		vals.newItem = newActs
-	}
-		res.redirect('/')
-});
 
 
 //delete record and return to homepage
@@ -175,8 +240,13 @@ app.post('/remove', (req, res)=>{
 	res.redirect('/')
 })
 
+app.post('/logout', (req, res)=>{
+	//reset user and return to login page
+	username ="";
+	res.redirect('/login')
+})
 
-// add route for each saved listing using the :param to search db for 'link'
+//add route for each saved listing using the :param to search db for 'link'
 app.get('/:p', (req, res)=>{
 	
 	let p = '/' + req.params.p
@@ -204,3 +274,9 @@ app.use( (req, res)=> {
 	res.render('404.ejs')
 });
 
+//port
+let port = process.env.PROT;
+if (port== null || port ==""){
+	port = 3000;
+}
+app.listen(port);

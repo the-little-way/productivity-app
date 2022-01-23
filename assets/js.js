@@ -1,3 +1,11 @@
+//logout button is smaller than the containing element, listen for nearby clicks
+const stickyBtn = document.getElementById('stickyBtn');
+const logoutBtn = document.getElementById('logoutBtn');
+stickyBtn.addEventListener('click', function(){
+	//trigger logout
+	logoutBtn.click()
+})
+
 //overlay input to edit city, alternatively can use add/remove class
 const overlay = document.getElementById('overlay');
 const editCity = document.getElementById('editCity');

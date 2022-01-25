@@ -13,3 +13,5 @@ This project covers all parts of a full stack project, i.e.:
 1. login/register/logout (basic authentication) functionality
 
 While rewriting the front-end in React, I did some market research and then got the idea to redevelop the whole project into a SAAS product (**Project Q**)
+
+**View screenshot here**: ![demo image](assets/screenshots/img.jpg)

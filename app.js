@@ -231,12 +231,14 @@ app.post('/save', (req, res)=>{
 app.post('/remove', (req, res)=>{
 
 	allVals.findByIdAndDelete(req.body.savedID, (err, docs)=>{
-    if (err){
-        console.log(err)
-    }
-    else console.log("Deleted : ", docs);
+    		if (err){
+        		console.log(err)
+    		}
+    		else console.log("Deleted : ", docs);
 	});
-
+	
+	//clear last item in savedItems and then redirect
+	vals.savedItems = vals.savedItems.splice(0, vals.savedItems.length - 1)
 	res.redirect('/')
 })
 

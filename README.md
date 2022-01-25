@@ -2,7 +2,7 @@ This is a little to-do web app I made mainly to experiment with a web app that o
 
 This project covers all parts of a full stack project, i.e.:
 
-1. a front-end with the usual html, css, js
+1. a custom designed UI for the front-end first in Figma and then in html, css, js
 
 1. back-end with routes and further logic
 

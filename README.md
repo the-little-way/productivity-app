@@ -14,4 +14,6 @@ This project covers all parts of a full stack project, i.e.:
 
 While rewriting the front-end in React, I did some market research and then got the idea to redevelop the whole project into a SAAS product (**Project Q**)
 
-**View screenshot here**: ![demo image](assets/screenshot/img.jpg)
+**View screenshot here**:
+
+![demo image](assets/screenshot/img.jpg)
